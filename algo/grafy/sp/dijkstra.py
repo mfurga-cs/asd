@@ -2,29 +2,38 @@
 
 from queue import PriorityQueue
 
-def neighbors(v):
-  return v
-
 def dijkstra(G, s):
-  Q = PriorityQueue()
-  S = {}
+  n = len(G)
+  D = [float("+inf")] * n
+  P = [None] * n
+  V = [False] * n
 
+  Q = PriorityQueue()
+
+  D[s] = 0
+  Q.put((0, s))
+
+  while Q.qsize() > 0:
+    # Zdejmowany wierzchołek z kolejki ma prawidłowo przypisaną najktótszą odległość D[u] do s.
+    _, u = Q.get()
+    # Musimy pominąć wierzchołki, które włożyliśmy z większą wagą a które były już przetowrzone.
+    if V[u]:
+      continue
+    V[u] = True
+
+    for v, w in G[u]:
+      if D[v] > D[u] + w:
+        D[v] = D[u] + w
+        P[v] = u
+        Q.put((D[v], v))
 
 G = [
-  [2, 3],       # 0
-  [3, 4],       # 1
-  [3, 4],       # 2
-  [0],          # 3
-  [1]           # 4
+  [(1, 7), (5, 1)],
+  [(0, 7), (2, 10), (5, 3)],
+  [(1, 10), (3, 4)],
+  [(2, 4), (4, 3), (5, 7)],
+  [(3, 3), (5, 2)],
+  [(0, 1), (1, 3), (3, 7), (4, 2)]
 ]
+dijkstra(G, 0)
 
-
-import heapq
-customers = []
-heapq.heappush(customers, (2, "Harry"))
-heapq.heappush(customers, (3, "Charles"))
-heapq.heappush(customers, (1, "Riya"))
-heapq.heappush(customers, (4, "Stacy"))
-
-
-print(customers)
