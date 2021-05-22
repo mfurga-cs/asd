@@ -5,6 +5,8 @@ from queue import PriorityQueue
 def prim(G):
   n = len(G)
 
+  # K[v] zawiera informajcę o obecnej wadzę krawędzi lekkiej kończącej się na wierzchołku
+  # v z P[v].
   K = [float("+inf")] * n
   V = [False] * n
   P = [None] * n
@@ -44,5 +46,4 @@ G = [
 ]
 
 print(prim(G))
-
 

@@ -34,11 +34,14 @@ def edges(G):
 def kruskal(G):
   n = len(G)
   E = edges(G)
+
+  # Sortujemy krawędzie po wagach.
   E = sorted(E, key=lambda x: x[2])
   fau = FAU(n)
 
   result = []
   for u, v, w in E:
+    # Dodajemy krawędź u, v do MST jeśli nie towrzy ona cylku z już wybranymi wierzchołkami.
     if fau.find(u) != fau.find(v):
       fau.union(u, v)
       result.append((u, v, w))
@@ -53,7 +56,6 @@ G = [
   [(3, 1), (5, 7)],
   [(0, 2), (1, 1), (3, 3), (4, 7)]
 ]
-
 
 print(kruskal(G))
 
