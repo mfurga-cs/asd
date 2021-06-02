@@ -18,7 +18,8 @@ def cf(T, visited, i, j):
   if i - 1 >= 0 and visited[i - 1][j] is False and T[i - 1][j] > 0:
     s += cf(T, visited, i - 1, j)
 
-  if j - 1 >= 0 and visited[i][j - 1] is False and T[i][j - 1] > 0: s += cf(T, visited, i, j - 1)
+  if j - 1 >= 0 and visited[i][j - 1] is False and T[i][j - 1] > 0:
+    s += cf(T, visited, i, j - 1)
 
   if j + 1 < m and visited[i][j + 1] is False and T[i][j + 1] > 0:
     s += cf(T, visited, i, j + 1)
@@ -53,10 +54,16 @@ def f(dp, back, A, i, p):
     v = f(dp, back, A, j, p + (i - j) - A[i])
     if v <= k:
       k = v
-      back[i] = j
+      back[i][p] = (j, p + (i - j) - A[i])
 
   dp[i][p] = k + 1
   return k + 1
+
+def print_path(P, i, p):
+  if i == 0:
+    return []
+  j, pp = P[i][p]
+  return print_path(P, j, pp) + [j]
 
 def plan(T):
   n = len(T)
@@ -72,21 +79,15 @@ def plan(T):
     stations.append(count_fuel(T, j))
 
   dp = [[None] * (s + 1) for _ in range(m + 1)]
-  back = [None] * (m)
+  back = [[None] * (s + 1) for _ in range(m + 1)]
 
   v = f(dp, back, stations, len(stations) - 1, 0)
 
   print(v)
-
-  l = []
   i = len(stations) - 1
 
-  print(back)
-
-  while back[i] is not None:
-    l.insert(0, back[i])
-    i = back[i]
-
+  l = print_path(back, i, 0)
+  print(l)
   return l
 
 runtests(plan)
