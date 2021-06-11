@@ -35,15 +35,21 @@ def floyd_warshall(G):
     print(row)
 
   print("-----")
-  print(D[2][3])
-  p = get_shorest_path(P, 2, 3)
-  print(p)
+  #print(D[2][3])
+  #p = get_shorest_path(P, 2, 3)
+  #print(p)
 
 G = [
   [0, 4, 0, 0],
   [0, 0, 0, -2],
   [2, 0, 0, 0],
   [2, 0, 0, 0]
+]
+
+G = [
+  [0, 5, 0],
+  [0, 0, 2],
+  [-8, 0, 0]
 ]
 
 floyd_warshall(G)

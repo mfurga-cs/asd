@@ -5,7 +5,7 @@
 #
 
 from queue import PriorityQueue
-from zad1testy import runtests
+#from zad1testy import runtests
 
 def print_path(P, v, d, s):
   if v == s:
@@ -69,6 +69,6 @@ G = [[-1, 6,-1, 5, 2],
 
 P = [0,1,3]
 
-#jak_dojade(G, P, 3, 0, 2)
-runtests(jak_dojade)
+print(jak_dojade(G, P, 5, 0, 2))
+#runtests(jak_dojade)
 
