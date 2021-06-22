@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #
-# Alg. quicksort.
+# Quicksort.
 #
-# Złożność; O(nlogn)
+# Złożoność: O(nlogn)
 # Niestabilny
 
 from random import randint
