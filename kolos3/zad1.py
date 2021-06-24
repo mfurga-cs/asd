@@ -28,12 +28,6 @@ def floyd_warshall(G):
 
   return D
 
-def print_solution(P, x, y, u, v):
-  if u == x and v == y:
-    return []
-  a, b = P[u][v]
-  return print_solution(P, x, y, a, b) + [(u, v)]
-
 def dfs_visit(G, D, d, u, v, visited, parent):
   visited[u][v] = True
 
@@ -45,7 +39,7 @@ def dfs_visit(G, D, d, u, v, visited, parent):
       if w == 0:
         continue
 
-      if D[uu][vv] == float("+inf") or D[uu][vv] < d:
+      if D[uu][vv] == float("+inf") or D[uu][vv] < d or (v == uu and vv == u):
         continue
 
       if not visited[uu][vv]:
@@ -53,7 +47,6 @@ def dfs_visit(G, D, d, u, v, visited, parent):
         dfs_visit(G, D, d, uu, vv, visited, parent)
 
   # 2 przypadki dla których nie zmieniamy jednego wierzchołka.
-
   for vv, w in enumerate(G[v]):
     if w == 0:
       continue
@@ -83,16 +76,83 @@ def dfs(G, D, d, x, y):
   for i in range(n):
     visited[i] = [False] * n
 
-  parent = [-1] * len(G)
+  parent = [None] * len(G)
   for i in range(n):
-    parent[i] = [-1] * n
+    parent[i] = [None] * n
 
   dfs_visit(G, D, d, x, y, visited, parent)
-  return print_solution(parent, x, y, y, x)
+
+#  print("====== parent")
+#  for row in parent:
+#    print(row)
+
+#  print("====== visited")
+#  for row in visited:
+#    print(row)
+
+  return get_solution(parent, y, x)
+
+
+def get_solution(P, u, v):
+  if P[u][v] is None:
+    return [(u, v)]
+  a, b = P[u][v]
+  return get_solution(P, a, b) + [(u, v)]
+"""
+def dfs_visit(G, u, v, visited, parent):
+  visited[u][v] = True
+
+  for uu, vv in G[u][v]:
+    if not visited[uu][vv]:
+      parent[uu][vv] = (u, v)
+      dfs_visit(G, uu, vv, visited, parent)
+
+def dfs(G, x, y):
+  n = len(G)
+  visited = [False] * n
+  parent = [None] * n
+
+  for i in range(n):
+    visited[i] = [False] * n
+    parent[i] = [None] * n
+
+  dfs_visit(G, x, y, visited, parent)
+  return get_solution(parent, y, x)
+
+def build_G(G, M, D, d, u, v):
+  n = len(M)
+
+  for uu in range(n):
+    for vv in range(n):
+      if (M[u][uu] != 0 or u == uu) and (M[v][vv] != 0 or v == vv) and (not (v == uu and u == vv)) and D[uu][vv] >= d:
+        G[u][v].append((uu, vv))
+
+"""
 
 def keep_distance(M, x, y, d):
+  n = len(M)
+
   D = floyd_warshall(M)
+#  G = [[[] for v in range(n)] for u in range(n)]
+
+#  for u in range(n):
+#    for v in range(n):
+#      build_G(G, M, D, d, u, v)
+
   return dfs(M, D, d, x, y)
+
+
+M = [
+[0, 1, 1, 0],
+[1, 0, 0, 1],
+[1, 0, 0, 1],
+[0, 1, 1, 0],
+]
+x = 0
+y = 3
+d = 2
+
+#print(keep_distance(M, x, y, d))
 
 runtests(keep_distance)
 
