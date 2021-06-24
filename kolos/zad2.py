@@ -15,21 +15,30 @@ class Node:
     self.val = val
     self.next = next
 
-class Heap(object):
+class HeapItem:
+  def __init__(self, priority: int, value: object):
+    self.priority = priority
+    self.value = value
+
+  def __lt__(self, other):
+    return self.priority < other.priority
+
+  def __eq__(self, other):
+    return self.priority == other.priority
+
+class Heap:
+  """
+  Min-heap implementation.
+  """
   def __init__(self):
-    self.t = []
+    self.items = []
+
+  def __len__(self):
+    return len(self.items)
 
   @property
-  def n(self):
-    return len(self.t)
-
-  @classmethod
-  def build(cls, t):
-    self = cls()
-    self.t = t
-    for i in range(Heap.parent(self.n - 1), -1, -1):
-      self._heapify(i)
-    return self
+  def length(self):
+    return len(self.items)
 
   @staticmethod
   def left(i):
@@ -43,42 +52,45 @@ class Heap(object):
   def parent(i):
     return (i - 1) // 2
 
+  def _swap(self, i, j):
+    self.items[i], self.items[j] = self.items[j], self.items[i]
+
   def _heapify(self, i):
     l = Heap.left(i)
     r = Heap.right(i)
     m = i
 
-    if l < self.n and self.t[l] < self.t[m]:
+    if l < self.length and self.items[l] < self.items[m]:
       m = l
-    if r < self.n and self.t[r] < self.t[m]:
+    if r < self.length and self.items[r] < self.items[m]:
       m = r
 
     if m != i:
-      self.t[m], self.t[i] = self.t[i], self.t[m]
+      self._swap(m, i)
       self._heapify(m)
 
-  def get_max(self):
-    return self.t[0]
-
-  def extract_min(self):
-    if self.n <= 0:
-      return None
-    self.t[0], self.t[self.n - 1] = self.t[self.n - 1], self.t[0]
-    min = self.t.pop()
-    self._heapify(0)
-    return min
-
-  def increase_key(self, i, key):
-    if key < self.t[i]:
+  def increase_priority(self, i, priority):
+    if priority < self.items[i].priority:
       return
-    self.t[i] = key
-    while i > 0 and self.t[Heap.parent(i)] > self.t[i]:
-      self.t[Heap.parent(i)], self.t[i] = self.t[i], self.t[Heap.parent(i)]
+    self.items[i].priority = priority
+    while i > 0 and self.items[Heap.parent(i)] > self.items[i]:
+      self._swap(Heap.parent(i), i)
       i = Heap.parent(i)
 
-  def insert(self, elem):
-    self.t.append(float("-inf"))
-    self.increase_key(self.n - 1, elem)
+  def top(self):
+    return (self.items[0].priority, self.items[0].value) if self.length > 0 else None
+
+  def get(self):
+    if self.length == 0:
+      return None
+    self._swap(0, self.length - 1)
+    item = self.items.pop()
+    self._heapify(0)
+    return (item.priority, item.value)
+
+  def put(self, priority, value):
+    self.items.append(HeapItem(float("-inf"), value))
+    self.increase_priority(self.length - 1, priority)
 
 def print_list(l):
   while l is not None:
@@ -90,25 +102,27 @@ def SortH(p, k):
   heap = Heap()
 
   for i in range(k + 1):
-    heap.insert(p.val)
+    heap.put(p.val, p)
     p = p.next
 
-  n = Node(-1, None)
-  curr = n
+  head = Node("dummy")
+  curr = head
 
   while p is not None:
-    min = heap.extract_min()
-    curr.next = Node(min, None)
+    _, node = heap.get()
+    curr.next = node
     curr = curr.next
-    heap.insert(p.val)
+
+    heap.put(p.val, p)
     p = p.next
 
-  while len(heap.t) > 0:
-    min = heap.extract_min()
-    curr.next = Node(min, None)
+  while len(heap) > 0:
+    _, node = heap.get()
+    curr.next = node
     curr = curr.next
 
-  return n.next
+  curr.next = None
+  return head.next
 
-runtests( SortH )
+runtests(SortH)
 
