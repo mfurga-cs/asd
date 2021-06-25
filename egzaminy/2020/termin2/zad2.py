@@ -45,28 +45,18 @@ def highway(A):
   n = len(A)
   D = []
 
-#  print(A)
-#  print("n: ", n)
-
   for x in range(n):
     for y in range(n):
       D.append((x, y, ((A[x][0] - A[y][0]) ** 2 + (A[x][1] - A[y][1]) ** 2) ** (1/2.)))
 
   D = sorted(D, key=lambda x: x[2])
 
-  print("D:")
-  print(D)
-
   m = float("+inf")
   for i in range(len(D)):
     v = kruskal(D, n, i)
-    print(v)
     m = min(m, v)
 
-  print(m)
   return ceil(m)
 
-A = [(10,10),(15,25),(20,20),(30,40)]
-print(highway(A))
-
 runtests(highway)
+
