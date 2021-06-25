@@ -1,25 +1,35 @@
 #!/usr/bin/env python3
+# Alg. Kruskala - minimalne drzewo rozpinające dla grafów nieskierowanych!
+# Zwraca listę krawędzi w postaci (u, v, w).
+#
+# Złożoność: O(ElogE) (sortowanie krawędzi)
 
-class FAU:
-  def __init__(self, n):
-    self.P = list(range(n))
-    self.R = [0] * n
+from utils import g_convert
 
-  def find(self, x):
-    if x != self.P[x]:
-      self.P[x] = self.find(self.P[x])
-    return self.P[x]
+class Node(object):
+  def __init__(self, value):
+    self.value = value
+    self.parent = self
+    self.rank = 0
 
-  def union(self, x, y):
-    x = self.find(x)
-    y = self.find(y)
+def find(x):
+  if x != x.parent:
+    x.parent = find(x.parent)
+  return x.parent
 
-    if self.R[x] > self.R[y]:
-      self.P[y] = x
-    else:
-      self.P[x] = y
-      if self.R[x] == self.R[y]:
-        self.R[y] += 1
+def union(x, y):
+  x = find(x)
+  y = find(y)
+
+  if x == y:
+    return
+
+  if x.rank > y.rank:
+    y.parent = x
+  else:
+    x.parent = y
+    if x.rank == y.rank:
+      y.rank += 1
 
 def edges(G):
   visited = [False] * len(G)
@@ -37,25 +47,32 @@ def kruskal(G):
 
   # Sortujemy krawędzie po wagach.
   E = sorted(E, key=lambda x: x[2])
-  fau = FAU(n)
+  V = [Node(i) for i in range(n)]
 
   result = []
   for u, v, w in E:
     # Dodajemy krawędź u, v do MST jeśli nie towrzy ona cylku z już wybranymi wierzchołkami.
-    if fau.find(u) != fau.find(v):
-      fau.union(u, v)
+    if find(V[u]) != find(V[v]):
+      union(V[u], V[v])
       result.append((u, v, w))
 
   return result
 
-G = [
-  [(1, 3), (5, 2)],
-  [(0, 3), (2, 5), (5, 1)],
-  [(1, 5), (3, 9)],
-  [(2, 9), (4, 1), (5, 3)],
-  [(3, 1), (5, 7)],
-  [(0, 2), (1, 1), (3, 3), (4, 7)]
-]
+G = """
+0
+1
+2
+3
+4
+#
+0 1 10
+1 2  1
+2 3 3
+2 0 4
+0 4 100
+3 4 20
+"""
 
+G = g_convert(G)
 print(kruskal(G))
 

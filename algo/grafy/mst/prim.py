@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
+#
+# Znajdowanie min. drzewa rozpinającego w grafie nieskierowanym!
+# Zwraca w przeciewieńswie do alg. Kruskala (Kruskal zwraca listę krawędzi)
+# drzewo
+#
+# Złożoność: O(ElogV)
+#
 
 from queue import PriorityQueue
+from utils import g_convert
 
 def prim(G):
   n = len(G)
@@ -30,20 +38,26 @@ def prim(G):
         Q.put((w, v))
 
   # Minimalne drzewo rozpinające tworzą krawędzię (P[u], u) dla każdego wierzchołka u.
-
   result = []
   for i in range(1, n):
     result.append((P[i], i))
   return result
 
-G = [
-  [(1, 3), (5, 2)],
-  [(0, 3), (2, 5), (5, 1)],
-  [(1, 5), (3, 9)],
-  [(2, 9), (4, 1), (5, 3)],
-  [(3, 1), (5, 7)],
-  [(0, 2), (1, 1), (3, 3), (4, 7)]
-]
+G = """
+0
+1
+2
+3
+4
+#
+0 1 10
+1 2  1
+2 3 3
+2 0 4
+0 4 100
+3 4 20
+"""
 
+G = g_convert(G)
 print(prim(G))
 
