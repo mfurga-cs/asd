@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
+# Alg. Dijkstry dla reprezentacji listowej.
+# Złożoność: O(ElogV)
 
 from queue import PriorityQueue
+from utils import g_convert
 
 def dijkstra(G, s):
   n = len(G)
@@ -27,13 +30,21 @@ def dijkstra(G, s):
         P[v] = u
         Q.put((D[v], v))
 
-G = [
-  [(1, 7), (5, 1)],
-  [(0, 7), (2, 10), (5, 3)],
-  [(1, 10), (3, 4)],
-  [(2, 4), (4, 3), (5, 7)],
-  [(3, 3), (5, 2)],
-  [(0, 1), (1, 3), (3, 7), (4, 2)]
-]
-dijkstra(G, 0)
+  return D
+
+G = """
+0
+1
+2
+3
+4
+#
+0 1 10
+1 2  1
+2 3 3
+2 0 4
+0 4 100
+3 4 20
+"""
+print(dijkstra(g_convert(G), 0))
 

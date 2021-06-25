@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+#
+# Złożoność: O(VE)
+#
 
 def bellman_ford(G, s):
   d = [float("+inf")] * len(G)
