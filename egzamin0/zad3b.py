@@ -35,8 +35,9 @@ def dijkstra(G, s):
 
   for i in range(n):
     D[i] = [float("+inf")] * 2
-    Q[i] = [True] * 2
+    Q[i] = [False] * 2
 
+  Q[s][0] = True
   D[s][0] = 0
 
   while not queue_empty(Q):
@@ -50,6 +51,7 @@ def dijkstra(G, s):
         continue
       if D[v][0] > D[u][t] + w:
         D[v][0] = D[u][t] + w
+        Q[v][0] = True
 
     # Skaczemy jeśli możemy.
     if t == 1:
@@ -63,6 +65,7 @@ def dijkstra(G, s):
           continue
         if D[z][1] > D[u][t] + max(G[u][v], G[v][z]):
           D[z][1] = D[u][t] + max(G[u][v], G[v][z])
+          Q[z][1] = True
 
   return D
 
