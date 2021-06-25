@@ -22,4 +22,3 @@ def runtests( f ):
         print("OK!")
     else:
         print("Bledy!")
-
