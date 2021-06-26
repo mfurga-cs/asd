@@ -47,10 +47,5 @@ def longest_incomplete(A, k):
 
   return longest
 
-
-if __name__ == "__main__":
-  A = [1,100, 5, 100, 1, 5, 1, 5]
-  print(longest_incomplete(A, 3))
-
-  runtests(longest_incomplete)
+runtests(longest_incomplete)
 

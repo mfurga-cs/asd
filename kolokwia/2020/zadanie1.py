@@ -63,3 +63,4 @@ def pretty_sort(arr):
     arr[i] = t[i][2]
 
   print(arr)
+
