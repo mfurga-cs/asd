@@ -17,5 +17,16 @@ def half(t):
     else:
       i -= 1
 
-  return i > 1, l
+  if i < 0:
+    return False
+
+  c = 0
+  for i in range(n):
+    if t[i] == l:
+      c += 1
+  return l if c > (n // 2) else False
+
+A = [2, 3, 7, 7, 7, 2, 2, 2]
+print(half(A))
+
 

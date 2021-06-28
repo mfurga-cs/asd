@@ -9,6 +9,7 @@
 #
 
 from math import ceil, log
+from inttree import *
 
 TREE_MAX = []
 TREE_LAZY = []
@@ -19,7 +20,6 @@ def tree_init(n):
   n = pow(2, ceil(log(n, 2)))
   TREE_MAX = [0] * (2 * n)
   TREE_LAZY = [0] * (2 * n)
-  TREE_MAX[1] = 10
 
 def tree_update(p, k, val):
   _tree_update(p, k, 1, 0, len(TREE_MAX) // 2 - 1, val)
@@ -83,12 +83,35 @@ def main(blocks):
 
   return tree_max(0, len(TREE_MAX) // 2 - 1)
 
+def main2(blocks):
+  points = []
+  for b, e in blocks:
+    points.append(b)
+    points.append(e)
+
+  points = sorted(list(set(points)))
+  T = tree(points)
+  print(points)
+
+  for p, k in blocks:
+    m = tree_maxi(T, (p, k))
+    tree_set(T, (p, k), m + 1)
+
+  return tree_maxi(T, (points[0], points[len(points) - 1]))
+
 if __name__ == "__main__":
   blocks = [(1, 3), (2, 5), (0, 3), (8, 9), (4, 6)]
-  blocks = [(1, 2)] * 20
-  n = len(blocks)
-  blocks.append((n ** 4, n ** 4 + 16))
+  #blocks = [(1, 2)] * 70
 
+  size = 1000000000000000
+  blocks.append((size, size + size // 2))
+  blocks.append((size, size + size // 2))
+  blocks.append((size, size + size // 2))
+  blocks.append((size, size + size // 2))
+  blocks.append((size, size + size // 2))
+  blocks.append((size, size + size // 2))
+  blocks.append((size, size + size // 2))
+  n = len(blocks)
   print(main(blocks))
 
 

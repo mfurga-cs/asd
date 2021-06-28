@@ -17,7 +17,6 @@ def dp(A, i, l, r):
 
   return dp(A, i - 1, l - A[i], r) or dp(A, i - 1, l, r - A[i])
 
-
 A = [6, 3, 4, 2, 1, 1]
 L = 6
 

@@ -32,6 +32,6 @@ def zbigniew(A):
 A = [2,2,1,0,0,0]
 A = [4,5,2,4,1,2,1,0]
 
-print(zbigniew(A))
+#print(zbigniew(A))
 runtests(zbigniew)
 

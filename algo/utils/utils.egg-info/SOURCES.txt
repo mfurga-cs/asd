@@ -1,5 +1,6 @@
 setup.py
 utils/__init__.py
+utils/bst.py
 utils/heap.py
 utils.egg-info/PKG-INFO
 utils.egg-info/SOURCES.txt
