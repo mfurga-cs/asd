@@ -1,9 +1,9 @@
 #
-# f(i, p) - min. liczba tankowań by dotrzeć do pola i mająć w zapasie dokładnie p
-#           jednostek panliwa.
+# Rozwiązanie zachłanne. Wybieramy max.
 #
 
 from zad3testy import runtests
+from queue import PriorityQueue
 
 def cf(T, visited, i, j):
   n = len(T)
@@ -36,42 +36,37 @@ def count_fuel(T, j):
     return 0
   return cf(T, visited, 0, j)
 
-def result(P, A, i, y):
-  if i == 0:
-    return [0]
-  j = P[i][y]
-  return result(P, A, j, max(y + (i - j) - A[j], 0)) + [i]
-
-def f(F, P, A, i, y):
-  if i == 0:
-    if y <= 0:
-      return 0
-    return float("+inf")
-
-  if F[i][y] is not None:
-    return F[i][y]
-
-  F[i][y] = float("+inf")
-  for j in range(i):
-    v = f(F, P, A, j, max(y + (i - j) - A[j], 0))
-    if v + 1 < F[i][y]:
-      F[i][y] = v + 1
-      P[i][y] = j
-
-  return F[i][y]
-
-def fwrapper(A):
+def min_stops(A):
   n = len(A)
-  F = [None] * n
-  P = [None] * n
+  scope = 0
+  count = 0
 
-  maxy = sum(A)
-  for i in range(n):
-    F[i] = [None] * (maxy + 1)
-    P[i] = [None] * (maxy + 1)
+  V = [False] * n
 
-  v = f(F, P, A, len(A) - 1, 0)
-  return result(P, A, len(A) - 1, 0)
+  q = PriorityQueue()
+  q.put((A[0], (0, A[0])))
+  V[0] = True
+
+  res = []
+
+  while True:
+    _, v = q.get()
+    i, v = v
+
+    res.append(i)
+
+    scope += v
+    count += 1
+
+    for i in range(scope + 1):
+      if i == len(A) - 1:
+        return res
+
+      if V[i]:
+        continue
+      V[i] = True
+
+      q.put((A[i] * -1, (i, A[i])))
 
 def plan(T):
   n = len(T)
@@ -86,7 +81,7 @@ def plan(T):
   for j in range(n):
     stations.append(count_fuel(T, j))
 
-  return fwrapper(stations)[:-1]
+  return min_stops(stations)
 
 runtests(plan)
 

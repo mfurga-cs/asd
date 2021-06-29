@@ -1,88 +1,59 @@
 #!/usr/bin/env python3
 #
-# Szukamy najkrótszej ścieżki przy użyciu GFS. Liczymy jej długość a następnie usuwamy kolejne krawędzie z najktótszej
-# scieżki. Jeżli długość się zwiększy zwracamy usuniętą krawędz.
+# Wyznaczamy wierzchołki, które biorą udział w najkrótszych scieżkach poprzed wykonanie
+# 2 razy BFS z wierzchołka s i z wierzchołka t. Jeśli dla danego wierzchołka
+# dist_s[v] + dist_t[v] == shortest_path_length to znaczy że jest on na najkrótszych ścieżkach
+# z s do t. Dzielimy teraz te wierzchołki na grupy w zależności od odległości od s.
+# Teraz jeśli znajdziemy 2 sąsiednie grupy które mają po jednym wierzchołu to będzie to oznaczać
+# że po usunięciu tej krawędzie najkrótsza scieżka z s do t przestanie istnieć.
+#
+# Złożoność: O(V + E)
 #
 
 from collections import deque
 from zad2testy import runtests
 
-def bfs(G, s, t):
-  visited = [False] * len(G)
-  parent = [-1] * len(G)
-  queue = deque()
+def bfs(G, s):
+  n = len(G)
+  V = [False] * n
+  P = [None] * n
+  D = [float("+inf")] * n
+  Q = deque()
 
-  visited[s] = True
-  queue.append(s)
-  done = False
+  V[s] = True
+  D[s] = 0
+  Q.append(s)
 
-  while len(queue) > 0 and not done:
-    u = queue.popleft()
-
+  while len(Q) > 0:
+    u = Q.popleft()
     for v in G[u]:
-      if not visited[v]:
-        visited[v] = True
-        parent[v] = u
-        queue.append(v)
-        if v == t:
-          done = True
+      if not V[v]:
+        V[v] = True
+        P[v] = u
+        D[v] = D[u] + 1
+        Q.append(v)
 
-  if done is False:
-    return None
-
-  path = []
-  v = t
-  while parent[v] != -1:
-    path.append((parent[v], v))
-    v = parent[v]
-
-  return path
-
-def path_len(G, s, t):
-  visited = [False] * len(G)
-  start = [-1] * len(G)
-  queue = deque()
-
-  start[s] = 0
-  visited[s] = True
-  queue.append(s)
-
-  while len(queue) > 0:
-    u = queue.popleft()
-
-    for v in G[u]:
-      if not visited[v]:
-        visited[v] = True
-        start[v] = start[u] + 1
-        queue.append(v)
-        if v == t:
-          return start[v]
-
-  return float("+inf")
+  return D
 
 def enlarge(G, s, t):
-  path = bfs(G, s, t)
-  if path is None:
-      return None
+  n = len(G)
+  dist_s = bfs(G, s)
+  dist_t = bfs(G, t)
 
-  shorten_path = len(path)
+  shortest_path = dist_s[t]
+  divisions = [[] for _ in range(shortest_path + 1)]
 
-  for e in path:
-    p, v = e
-    G[p].remove(v)
-    G[v].remove(p)
+  for i in range(n):
+    if dist_s[i] + dist_t[i] == shortest_path:
+      divisions[dist_s[i]].append(i)
 
-    path = path_len(G, s, t)
+  result = None
 
-    if path_len(G, s, t) > shorten_path:
-      return (p, v)
+  for i in range(1, shortest_path + 1):
+    if len(divisions[i - 1]) == len(divisions[i]) == 1:
+      result = (divisions[i - 1][0], divisions[i][0])
 
-    G[p].append(v)
-    G[v].append(p)
-
-  return None
+  return result
 
 runtests(enlarge)
-
-
 
