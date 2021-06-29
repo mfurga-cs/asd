@@ -1,41 +1,43 @@
 from zad1testy import runtests
+from collections import deque
 
-def dfs_visit(G, u, visited, parent, started):
-  max_dist = started[u]
-  max_vertex = u
+def bfs(G, s):
+  n = len(G)
+  visited = [False] * n
+  parent = [-1] * n
+  distance = [0] * n
 
-  for v in G[u]:
-    if not visited[v]:
-      visited[v] = True
-      parent[v] = u
-      started[v] = started[u] + 1
+  max_vertex = -1
+  max_length = float("-inf")
 
-      dist, vertex = dfs_visit(G, v, visited, parent, started)
-      if dist > max_dist:
-        max_dist = dist
-        max_vertex = vertex
+  queue = deque()
+  visited[s] = True
+  distance[s] = 0
 
-  return max_dist, max_vertex
+  queue.append(s)
+  while len(queue) > 0:
+    u = queue.popleft()
 
-def dfs(G, u, parent):
-  visited = [False] * len(G)
-  started = [-1] * len(G)
-  visited[u] = True
-  started[u] = 0
-  return dfs_visit(G, u, visited, parent, started)
+    if distance[u] > max_length:
+      max_length = distance[u]
+      max_vertex = u
+
+    for v in G[u]:
+      if not visited[v]:
+        visited[v] = True
+        parent[v] = u
+        distance[v] = distance[u] + 1
+        queue.append(v)
+
+  return max_length, max_vertex, parent
 
 def diameter(G):
-  parent = [-1] * len(G)
-  _, v = dfs(G, 0, parent)
-
-  parent = [-1] * len(G)
-  length, v = dfs(G, v, parent)
-
+  _, max_vertex, _ = bfs(G, 0)
+  length, v, parent = bfs(G, max_vertex)
   diam = []
   while v != -1:
     diam.append(v)
     v = parent[v]
-
   return diam, length
 
 def best_root(L):
