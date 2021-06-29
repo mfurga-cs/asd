@@ -3,24 +3,30 @@
 from collections import deque
 
 def bfs(G, s):
-  visited = [False] * len(G)
-  parent = [-1] * len(G)
-  queue = deque()
+  n = len(G)
+  V = [False] * n
+  P = [None] * n
+  D = [float("+inf")] * n
+  Q = deque()
 
-  visited[s] = True
-  queue.append(s)
+  V[s] = True
+  D[s] = 0
+  Q.append(s)
 
-  while len(queue) > 0:
-    u = queue.popleft()
+  while len(Q) > 0:
+    u = Q.popleft()
 
-    # do whatever
     print(u)
 
     for v in G[u]:
-      if not visited[v]:
-        visited[v] = True
-        parent[v] = u
-        queue.append(v)
+      if not V[v]:
+        V[v] = True
+        P[v] = u
+        D[v] = D[u] + 1
+        Q.append(v)
+
+  return D
+
 
 G = [
   [1, 4],
@@ -30,5 +36,5 @@ G = [
   [0, 3]
 ]
 
-bfs(G, 0)
+bfs2(G, 0)
 
