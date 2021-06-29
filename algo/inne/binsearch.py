@@ -58,3 +58,7 @@ if __name__ == "__main__":
   for num in range(-1000, 1000):
     assert binsearch(A, num) == (True, num + 1000)
 
+  A = [e // 4 for e in range(1000)]
+  for i in range(1000):
+    assert binsearch(A, i // 4) == (True, A.index(i // 4))
+
