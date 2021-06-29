@@ -8,39 +8,64 @@
 #
 
 from zad3testy import runtests
+from utils import BST
 
-def all_usage(U, uniq):
-  count = 0
-  for i in uniq:
-    if U[i] > 0:
-      count += 1
-  return count == len(uniq)
+def binary_search(A, x):
+  result = False
+  l = 0
+  r = len(A) - 1
+
+  while l <= r:
+    m = (l + r) // 2
+
+    if A[m] > x:
+      r = m - 1
+
+    if A[m] < x:
+      l = m + 1
+
+    if A[m] == x:
+      result = True
+      r = m - 1
+
+  return result, l
 
 def longest_incomplete(A, k):
   n = len(A)
-  maxi = max(A) + 1
+  bst = BST()
 
-  uniq = list(set(A))
-
-  #U = [0] * maxi
-  U = {}
-
+  # O(nlogk)
   for i in range(n):
-    if A[i] not in U:
-      U[A[i]] = 0
+    if bst.find(A[i]) == None:
+      bst.insert(A[i])
 
-  #for i in range(n):
-  #  C[A[i]] = 1
+  uniq = []
+  count = [0] * k
+  counter = 0
+
+  # O(k)
+  m = bst.min()
+  while m is not None:
+    uniq.append(m.value)
+    bst.delete(m.value)
+    m = bst.min()
 
   longest = 0
   i, j = 0, 0
 
+  # O(nlogk)
   while j < n:
-    U[A[j]] += 1
+    _, idx = binary_search(uniq, A[j])
+    if count[idx] == 0:
+      counter += 1
+    count[idx] += 1
     j += 1
 
-    while all_usage(U, uniq):
-      U[A[i]] -= 1
+    while counter == k:
+      _, idx = binary_search(uniq, A[i])
+      if count[idx] == 1:
+        counter -= 1
+      count[idx] -= 1
       i += 1
 
     longest = max(longest, j - i)

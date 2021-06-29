@@ -21,14 +21,15 @@ def dfs_visit(G, u, visited, parent):
   #finished[u] = time
 
 def dfs(G):
-  visited = [False] * len(G)
-  parent = [-1] * len(G)
+  n = len(G)
+  visited = [False] * n
+  parent = [-1] * n
 
-  for u in range(len(G)):
+  for u in range(n):
     if not visited[u]:
       dfs_visit(G, u, visited, parent)
 
-  print(parent)
+  return parent
 
 G = [
   [1, 2],

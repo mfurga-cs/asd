@@ -20,7 +20,7 @@ def zbigniew(A):
     count += 1
 
     for i in range(scope + 1):
-      if i == len(A):
+      if i == len(A) - 1:
         return count
 
       if V[i]:
