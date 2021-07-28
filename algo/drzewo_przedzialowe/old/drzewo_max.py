@@ -103,7 +103,7 @@ if __name__ == "__main__":
   blocks = [(1, 3), (2, 5), (0, 3), (8, 9), (4, 6)]
   #blocks = [(1, 2)] * 70
 
-  size = 1000000000000000
+  size = 1000000
   blocks.append((size, size + size // 2))
   blocks.append((size, size + size // 2))
   blocks.append((size, size + size // 2))
@@ -115,3 +115,4 @@ if __name__ == "__main__":
   print(main(blocks))
 
 
+                                                                        
