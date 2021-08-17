@@ -15,10 +15,10 @@
 #
 
 def result(P, A, i, k):
-  if i == 0:
-    return ""
+  if k == 1:
+    return "|" + ",".join(str(n) for n in A[0:i+1])
   j = P[i][k]
-  return result(P, A, j, k - 1) + "|" + ",".join(str(n) for n in A[j + 1:i + 1])
+  return result(P, A, j, k - 1) + "|" + ",".join(str(n) for n in A[j+1:i+1])
 
 def s(A, i, j):
   return sum(A[i:j+1])
@@ -52,10 +52,12 @@ def fwrapper(A, k):
     F[i] = [None] * (k + 1)
     P[i] = [None] * (k + 1)
 
-  f(F, P, A, n - 1, k)
+  v = f(F, P, A, n - 1, k)
+  print(v)
   return result(P, A, n - 1, k)
 
 A = [2, 1, 3, 7, 5, 2, 3]
+A = [2,2,2]
 k = 3
 print(fwrapper(A, k))
 
