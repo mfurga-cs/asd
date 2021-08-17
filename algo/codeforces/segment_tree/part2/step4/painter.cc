@@ -1,82 +1,74 @@
 /*
-  Drzewo przedziałowe na tablicy. Szukanie liczby spójnych ciągów 1.
-
-  Operacje:
-    1. update(a, b, v) - ustaw na przedziale wartość 1.
-    2. query_cnt(a, b) - zwraca liczbę segmentów na przedziala a do b.
-    3. query_sum(a, b) - zwraca sumę jedynek na przedziale a do b.
+  Drzewo przedziałowe na tablicy.
 */
 
-#include <cstdio>
-#include <cmath>
-#include <vector>
-#include <limits>
-#include <cassert>
+#include <bits/stdc++.h>
 
-typedef long long int int64;
+typedef int int64;
+
+#define WHITE false
+#define BLACK true
 
 #define LEFT(v)   (2 * (v) + 1)
 #define RIGHT(v)  (2 * (v) + 2)
 
-struct row {
-  int64 v;
-  int64 l;
-  int64 r;
-};
-
 struct SegmentTree {
   int size;
-  std::vector<int64> pref;
-  std::vector<int64> suff;
+  std::vector<bool> pref;
+  std::vector<bool> suff;
   std::vector<int64> cnt;
-  std::vector<int64> sum;
+  std::vector<int64> blk;
   std::vector<bool> upd;
 
   SegmentTree(int n) {
     size = std::pow(2, std::ceil(std::log(n)/std::log(2)));
-    pref.assign(size * 2, 0);
-    suff.assign(size * 2, 0);
+    pref.assign(size * 2, WHITE);
+    suff.assign(size * 2, WHITE);
     cnt.assign(size * 2, 0);
-    sum.assign(size * 2, 0);
+    blk.assign(size * 2, 0);
     upd.assign(size * 2, false);
   }
 
   void lazy_propagation(int vertex) {
     if (upd[vertex]) {
-      pref[LEFT(vertex)] = pref[vertex];
-      suff[LEFT(vertex)] = suff[vertex];
+      pref[LEFT(vertex)] = static_cast<bool>(cnt[vertex]);
+      suff[LEFT(vertex)] = static_cast<bool>(cnt[vertex]);
+      pref[RIGHT(vertex)] = static_cast<bool>(cnt[vertex]);
+      suff[RIGHT(vertex)] = static_cast<bool>(cnt[vertex]);
       cnt[LEFT(vertex)] = cnt[vertex];
-      sum[LEFT(vertex)] = sum[vertex] / 2;
-
-      pref[RIGHT(vertex)] = pref[vertex];
-      suff[RIGHT(vertex)] = suff[vertex];
       cnt[RIGHT(vertex)] = cnt[vertex];
-      sum[RIGHT(vertex)] = sum[vertex] / 2;
+      blk[LEFT(vertex)] = blk[vertex] / 2;
+      blk[RIGHT(vertex)] = blk[vertex] / 2;
       upd[vertex] = false;
+      upd[LEFT(vertex)] = true;
+      upd[RIGHT(vertex)] = true;
     }
   }
 
-  void merge(int vertex, int left, int right) {
-    pref[vertex] = pref[left];
-    suff[vertex] = suff[right];
-    sum[vertex] = sum[left] + sum[right];
-
-    cnt[vertex] = cnt[left] + cnt[right];
-    if (suff[left] == 1 && pref[right] == 1) {
+  void merge(int vertex) {
+    cnt[vertex] = cnt[LEFT(vertex)] + cnt[RIGHT(vertex)];
+    blk[vertex] = blk[LEFT(vertex)] + blk[RIGHT(vertex)];
+    pref[vertex] = pref[LEFT(vertex)];
+    suff[vertex] = suff[RIGHT(vertex)];
+    if (suff[LEFT(vertex)] == BLACK && pref[RIGHT(vertex)] == BLACK) {
       cnt[vertex]--;
     }
   }
 
-  void update(int a, int b, int value, int vertex, int left, int right) {
+  void update(int a, int b, bool value, int vertex, int left, int right) {
     if (b < left || a > right) {
       return;
     }
 
     if (a <= left && b >= right) {
-      cnt[vertex] = value;
+      cnt[vertex] = static_cast<int64>(value);
+      if (value) {
+        blk[vertex] = right - left + 1;
+      } else {
+        blk[vertex] = 0;
+      }
       pref[vertex] = value;
       suff[vertex] = value;
-      sum[vertex] = (right - left + 1) * value;
       upd[vertex] = true;
       return;
     }
@@ -87,76 +79,55 @@ struct SegmentTree {
     update(a, b, value, LEFT(vertex), left, mid);
     update(a, b, value, RIGHT(vertex), mid + 1, right);
 
-    merge(vertex, LEFT(vertex), RIGHT(vertex));
+    merge(vertex);
   }
 
-  void update(int64 a, int64 b, int64 value) {
-    if (a < 0 || b < 0) {
-      printf("%lld %lld\n", a, b);
-      assert(1 == 0);
-    }
+  void update(int64 a, int64 b, bool value) {
     update(a, b, value, 0, 0, size - 1);
   }
 
-/*
-  int64 query(int a, int b, int vertex, int left, int right) {
-    if (b < left || a > right) {
-      return;
-    }
-
-    if (a <= left && b >= right) {
-      return cnt[vertex];
-    }
-
-    lazy_propagation(vertex, left, right);
-
-    int mid = (left + right) / 2;
-    if (i <= mid) {
-      return query(i, LEFT(vertex), left, mid);
-    }
-    return query(i, RIGHT(vertex), mid + 1, right);
-  }
-
-  int64 query(int i) {
-    return query(i, 0, 0, size - 1);
-  }
-*/
 };
 
+struct input {
+  char color;
+  int64 arg1;
+  int64 arg2;
+};
 
 int main(void)
 {
   int n;
   scanf("%d", &n);
 
-  std::vector<row> rows;
+  std::vector<input> data(n);
+  int64 maxi = std::numeric_limits<int64>::min();
+  int64 mini = std::numeric_limits<int64>::max();
+  for (int i = 0; i < n; i++) {
+    scanf(" %c %d %d", &data[i].color, &data[i].arg1, &data[i].arg2);
+    maxi = std::max(maxi, data[i].arg1 + data[i].arg2 - 1);
+    mini = std::min(mini, data[i].arg1);
+  }
 
-  int64 max = std::numeric_limits<int64>::min();
+  if (mini < 0) {
+    mini = std::abs(mini);
+  } else {
+    mini = 0;
+  }
+
+  SegmentTree st(mini + maxi + 1);
+
   char color;
-  int arg1, arg2;
-  for (int i = 0; i < n; i++) {
-    row r;
-    scanf(" %c %d %d", &color, &arg1, &arg2);
-    r.l = arg1;
-    r.r = arg1 + arg2 - 1;
-    r.v = color == 'B';
-    max = std::max(max, r.r);
-    rows.push_back(r);
-    if (r.l < 0 || r.r < 0) {
-      printf("%d %d\n", r.l, r.r);
-      volatile int d[1] = {0};
-      d[10000] = 1;
-      printf("%d\n", d[10000]);
-    }
-  }
-
-  SegmentTree st(max + 1);
+  int64 arg1, arg2;
 
   for (int i = 0; i < n; i++) {
-    row r = rows[i];
-    st.update(r.l, r.r, r.v);
-    printf("%lld %lld\n", st.cnt[0], st.sum[0]);
+    //scanf(" %c %d %d", &color, &arg1, &arg2);
+    color = data[i].color;
+    arg1 = data[i].arg1;
+    arg2 = data[i].arg2;
+    st.update(mini + arg1, mini + arg1 + arg2 - 1, color == 'B');
+    printf("%d %d\n", st.cnt[0], st.blk[0]);
   }
+
   return 0;
 }
 

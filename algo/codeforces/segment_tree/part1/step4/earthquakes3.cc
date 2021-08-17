@@ -1,0 +1,107 @@
+#include <bits/stdc++.h>
+
+typedef int int64;
+
+#define LEFT(v)   (2 * (v) + 1)
+#define RIGHT(v)  (2 * (v) + 2)
+
+struct SegmentTree {
+  int size;
+  std::vector<int64> array;
+
+  SegmentTree(int n) {
+    size = std::pow(2, std::ceil(std::log(n)/std::log(2)));
+    array.assign(2 * size, std::numeric_limits<int64>::max());
+  }
+
+  void update(int index, int value, int vertex, int left, int right) {
+    if (left == right) {
+      array[vertex] = value;
+      return;
+    }
+
+    int mid = (left + right) / 2;
+    if (index <= mid) {
+      update(index, value, LEFT(vertex), left, mid);
+    } else {
+      update(index, value, RIGHT(vertex), mid + 1, right);
+    }
+
+    array[vertex] = std::min(array[LEFT(vertex)], array[RIGHT(vertex)]);
+  }
+
+  void update(int index, int value) {
+    update(index, value, 0, 0, size - 1);
+  }
+
+  int query(int a, int b, int p, int vertex, int left, int right) {
+    if (b < left || a > right) {
+      return 0;
+    }
+
+    if (a <= left && b >= right && array[vertex] > p) {
+      return 0;
+    }
+
+    if (left == right) {
+      array[vertex] = std::numeric_limits<int64>::max();
+      return 1;
+    }
+
+    int mid = (left + right) / 2;
+    int l = query(a, b, p, LEFT(vertex), left, mid);
+    int r = query(a, b, p, RIGHT(vertex), mid + 1, right);
+
+    array[vertex] = std::min(array[LEFT(vertex)], array[RIGHT(vertex)]);
+    return l + r;
+  }
+
+  int query(int a, int b, int p) {
+    return query(a, b, p, 0, 0, size - 1);
+  }
+
+};
+
+/*
+int main(void)
+{
+  #define SIZE 8
+  //               0  1  2  3  4  5  6  7
+  int arr[SIZE] = {7, 5, 3, 2, 1, 3, 2, 7};
+
+  SegmentTree st(SIZE);
+
+  for (int i = 0; i < SIZE; i++) {
+    st.update(i, arr[i]);
+  }
+
+  printf("%d\n", st.query(3, 4, 1));
+
+
+  return 0;
+}
+*/
+
+int main(void)
+{
+  int n, m;
+  scanf("%d %d", &n, &m);
+
+  SegmentTree st(n);
+
+  int op, arg1, arg2, arg3;
+  for (int i = 0; i < m; i++) {
+    scanf("%d", &op);
+    if (op == 1) {
+      scanf("%d %d", &arg1, &arg2);
+      st.update(arg1, arg2);
+    } else {
+      scanf("%d %d %d", &arg1, &arg2, &arg3);
+      printf("%d\n", st.query(arg1, arg2 - 1, arg3));
+    }
+  }
+
+  return 0;
+}
+
+
