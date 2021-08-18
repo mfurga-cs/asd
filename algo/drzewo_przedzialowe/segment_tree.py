@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+#
+# Implementacja drzewa przedziałowego typu przedział-przedział z max na przedziale.
+# Drzewo off-line budowane z puntków bazowych końców przedziałów.
+#
 
 class TreeNode:
   def __init__(self, left=None, right=None):
