@@ -1,66 +1,51 @@
-#!/usr/bin/env python3
-
-time = 0
-parent = []
-visited = []
-low = []
-d = []
-
-def dfs_visit(G, u):
-  global time
-
-  # Start time
-  visited[u] = True
-
-  time += 1
-  low[u] = d[u] = time
-
-  for v in G[u]:
-    if not visited[v]:
-      parent[v] = u
-      dfs_visit(G, v)
-      low[u] = min(low[u], low[v])
-    elif v != parent[u]:
-      low[u] = min(low[u], d[v])
+# Znajdowanie mostów w grafie.
+#
+# low[v] - indeks najwyżeszego wierzchołka w drzewie dfs, do którgo możemy skoczyć
+#          z podrzewa zakorzenionego w v.
+#
+# Złożoność: O(V + E)
 
 def dfs(G):
-  global parent
-  global visited
-  global low
-  global d
+  n = len(G)
 
-  visited = [False] * len(G)
-  parent = [-1] * len(G)
-  d = [-1] * len(G)
-  low = [-1] * len(G)
+  preorder = 0
+  visited = [False] * n
+  parent = [-1] * n
+  pre = [-1] * n
+  low = [-1] * n
 
-  for u in range(len(G)):
+  def dfs_visit(u):
+    nonlocal preorder
+
+    visited[u] = True
+
+    pre[u] = low[u] = preorder
+    preorder += 1
+
+    for v in G[u]:
+      if not visited[v]:
+        # Jeżeli wierzchołek nie został odwiedzony tzn. musi towrzyć osobne
+        # podrzewo, które nie jest połączone krawędzą do innych podrzew dzieci u.
+        # Gdyby tak było to wierzchołek v byłby odwiedzony wcześniej w jednym z tych
+        # podrzew.
+        parent[v] = u
+        dfs_visit(v)
+
+        # Aktualizujemy low[u] z dzieci wierzchołka u.
+        low[u] = min(low[u], low[v])
+      elif v != parent[u]:
+        # Jeżeli wierzchołek v był już odwiedzony i nie przyszliśmy z niego do obecnego
+        # to krawędz u-v jest to krawędź wsteczna (skok) do wcześniejszego wierzchołka v
+        # w drzewie dfs. Aktualizujemy low[u].
+        low[u] = min(low[u], pre[v])
+
+  for u in range(n):
     if not visited[u]:
-      dfs_visit(G, u)
+      dfs_visit(u)
 
-  # Wypisywanie mostów.
-  for i in range(len(G)):
-    if low[i] == d[i] and i != 0:
-      print(parent[i], i)
-
-G = [
-  [1, 6],
-  [0, 2],
-  [1, 3, 6],
-  [2, 4, 5],
-  [3, 5],
-  [3, 4],
-  [0, 2, 7],
-  [6],
-]
-
-G = [
-  [1,2,3],
-  [0,2],
-  [0,1],
-  [0,4],
-  [3]
-]
+  for u in range(n):
+    if low[u] == pre[u] and u != 0:
+      print("%d - %d" % (parent[u], u))
 
 dfs(G)
 
