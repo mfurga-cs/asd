@@ -85,5 +85,6 @@ G = """
 4 5
 """
 
-dfs(g_convert(G, False))
+dfs(g_convert(G))
+
 
