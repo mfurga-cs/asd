@@ -34,21 +34,16 @@ def euler(G):
     while pos[u] < n:
       v = pos[u]
       pos[u] += 1
-      if G[u][v] == 1:
-        # Ustawiamy -1 w wierszu dla wierzchołka v, że krawędź do u jest już odwiedzona.
-        # (Potem naprawimy ją przeglądając do końca wiersz sąsiedztwa).
-        G[v][u] = -1
+      # Jeżeli pos[v] <= u lub 0 tzn krawędź v-u nie została jeszcze odwiedzona.
+      if G[u][v] == 1 and (pos[v] <= u or pos[v] == 0):
         dfs_visit(v)
-      # Naprawiamy krawędź.
-      if G[u][v] == -1:
-        G[u][v] = 1
     cycle.append(u)
 
   dfs_visit(0)
   return cycle
 
-# List. Czas; O(
-def euler2(G):
+# List. Czas: O((V + E) * V), pamięć: O(V^2)
+def euler(G):
   n = len(G)
   visited = [[False] * n for _ in range(n)]
   cycle = []
@@ -63,6 +58,31 @@ def euler2(G):
 
   dfs_visit(0)
   return cycle
+
+# List. Czas: O(V + E), pamięć: O(V^2)
+def euler(G):
+  n = len(G)
+  # pos[v] wstazuje na kolejny wierzchołek do przeszukania w liście sąsiedztwa
+  # dla wierzchołka v. Dzięki temu gwarantujemy że przeglądanie listy dla danego
+  # wierzchołka będzie zajmowało dokładnie O(deg(v)) czasu (zamortyzowanego) pomiędzy
+  # kolejnymi wykonaniami rekurencyjnymi.
+  pos = [0] * n
+  visited = [[False] * n for _ in range(n)]
+  cycle = []
+
+  def dfs_visit(u):
+    while pos[u] < len(G[u]):
+      v = G[u][pos[u]][0]  # [0] bo pary (v, w).
+      pos[u] += 1
+      if not visited[u][v]:
+        visited[u][v] = True
+        visited[v][u] = True
+        dfs_visit(v)
+    cycle.append(u)
+
+  dfs_visit(0)
+  return cycle
+
 
 G = """
 0
@@ -83,15 +103,6 @@ G = """
 3 4
 4 5
 """
-G = g_convert(G, matrix=True)
-for row in G:
-  print(row)
-print("----------")
-
-print(euler3(G))
-print("----------")
-for row in G:
-  print(row)
-print("----------")
-
+G = g_convert(G, matrix=False)
+print(euler(G))
 
