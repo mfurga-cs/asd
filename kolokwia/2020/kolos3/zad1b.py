@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from inttree import *
+from utils import tree_print
 
 class TreeNode:
   def __init__(self, left=None, right=None):
@@ -28,19 +29,6 @@ def _tree_build(points, left, right):
 
 def tree_build(points):
   return _tree_build(points, 0, len(points) - 1)
-
-def tree_print(tree, space=0):
-  if tree is None:
-    return
-
-  space += 20
-  tree_print(tree.rchild, space)
-
-  for i in range(20, space):
-    print(" ", end="")
-  print(tree)
-
-  tree_print(tree.lchild, space)
 
 def tree_lazy_propagation(tree):
   if tree.lazy:
@@ -123,5 +111,4 @@ def intervals(I):
   return result
 
 run_tests(intervals)
-
 
