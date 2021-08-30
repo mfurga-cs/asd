@@ -12,10 +12,10 @@ class TreeNode:
     self.rchild = None
 
     self.max = 0
-    self.lazy = None
+    self.lazy = False
 
   def __repr__(self):
-    return f"[{self.left}, {self.right}]"
+    return f"[{self.left}, {self.right}] {self.max} {'[+]' if self.lazy else '[-]'}"
 
 def _tree_build(points, left, right):
   node = TreeNode(points[left], points[right])
@@ -26,16 +26,29 @@ def _tree_build(points, left, right):
   node.rchild = _tree_build(points, mid, right)
   return node
 
-def tree_build(points):
+def tree_build(intervals):
+  points = []
+  for interval in intervals:
+    points.append(interval[0])
+    points.append(interval[1])
+  points = sorted(points)
+  i = 0; j = 0
+  while j < len(points):
+    while j + 1 < len(points) and points[j] == points[j + 1]:
+      j += 1
+    points[i] = points[j]
+    i += 1
+    j += 1
+  points = points[:i]
   return _tree_build(points, 0, len(points) - 1)
 
 def tree_lazy_propagation(tree):
-  if tree.lazy is not None:
-    tree.lchild.max = tree.lazy
-    tree.lchild.lazy = tree.lazy
-    tree.rchild.max = tree.lazy
-    tree.rchild.lazy = tree.lazy
-    tree.lazy = None
+  if tree.lazy:
+    tree.lchild.max = tree.max
+    tree.lchild.lazy = True
+    tree.rchild.max = tree.max
+    tree.rchild.lazy = True
+    tree.lazy = False
 
 def tree_update(tree, a, b, value):
   if tree.right <= a or tree.left >= b:
@@ -43,7 +56,7 @@ def tree_update(tree, a, b, value):
 
   if tree.left >= a and tree.right <= b:
     tree.max = value
-    tree.lazy = value
+    tree.lazy = True
     return
 
   tree_lazy_propagation(tree)
@@ -67,15 +80,18 @@ def tree_query(tree, a, b):
   return max(left, right)
 
 if __name__ == "__main__":
-  points = list(map(int, input().split()))
-  tree = tree_build(points)
+  from utils import tree_print
 
-  while line := input():
-    op, a, b, value = (list(map(int, line.split())) + [None])[:4]
-    if op == 1:
-      tree_update(tree, a, b, value)
-    else:
-      v = tree_query(tree, a, b)
-      print(v)
+  blocks = [(1, 3, 1), (5, 6, 1), (2, 4, 1), (2, 7, 2)]
+  intervals = [(b[0], b[1]) for b in blocks]
+  tree = tree_build(intervals)
+  #tree_print(tree)
+
+  for block in blocks:
+    tree_update(tree, block[0], block[1], block[2])
+
+  tree_print(tree)
+  print(tree_query(tree, 6, 7))
+  tree_print(tree)
 
 
