@@ -332,14 +332,19 @@ def tree_print(current_node, left='lchild', right='rchild', nameattr='name'):
     nb_children = lambda node: sum(nb_children(child) for child in children(node)) + 1
 
     def balanced_branches(current_node):
-        size_branch = {child: nb_children(child) for child in children(current_node)}
-
+        # size_branch = {child: nb_children(child) for child in children(current_node)}
         """ Creation of balanced lists for "a" branch and "b" branch. """
-        a = sorted(children(current_node), key=lambda node: nb_children(node))
-        b = []
-        while a and sum(size_branch[node] for node in b) < sum(size_branch[node] for node in a):
-            b.append(a.pop())
+        # a = sorted(children(current_node), key=lambda node: nb_children(node))
+        # b = []
+        # while a and sum(size_branch[node] for node in b) < sum(size_branch[node] for node in a):
+        #     b.append(a.pop())
 
+        if len(children(current_node)) >= 2:
+          a = [children(current_node)[0]]
+          b = [children(current_node)[1]]
+        else:
+          a = []
+          b = []
         return a, b
 
     print_tree_vertically(current_node, balanced_branches, name, children)
