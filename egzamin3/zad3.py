@@ -1,3 +1,7 @@
+#
+# Złożoność: O(mlogn), Pamięć: O(1)
+#
+
 from zad3testy import runtests
 
 def minpow2(n):
@@ -7,12 +11,13 @@ def minpow2(n):
   return p // 2
 
 def find(T, c, p):
-  if p == 0:
-    return T.key
-  if c & p == 0:
-    return find(T.left, c, p // 2)
-  else:
-    return find(T.right, c, p // 2)
+  while p != 0:
+    if c & p == 0:
+      T = T.left
+    else:
+      T = T.right
+    p //= 2
+  return T.key
 
 def maxim(T, C):
   m = -1
